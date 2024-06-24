@@ -1,0 +1,3 @@
+Balanced Binary Search Tree TOP project
+
+6/24 nailed down deleteItem function
