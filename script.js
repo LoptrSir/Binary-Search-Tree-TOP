@@ -49,18 +49,21 @@ class Tree {
     return node;
   }
 
-  insertItem(value, root) {
-    // insertItem(value, root = this.root) {
+  // insertItem(value, root) {
+  insertItem(value, root = this.root) {
     if (root === null) {
       console.log("InsertItem: inserted", value);
       return new Node(value);
     }
-    if (value < root.data) {
-      root.left = this.insertItem(value, root.left);
-    } else {
-      root.right = this.insertItem(value, root.right);
-    }
-    return root;
+    // if (value < root.data) {
+    //   root.left = this.insertItem(value, root.left);
+    // } else {
+    //   root.right = this.insertItem(value, root.right);
+    // }
+    // return root;
+    return value < root.data
+      ? (root.left = this.insertItem(value, root.left))
+      : this.insertItem(value, root.right);
   }
 
   //deleteItem(value, root) {
@@ -96,7 +99,8 @@ class Tree {
     return node;
   }
 
-  findItem(value, root) {
+  // findItem(value, root) {
+  findItem(value, root = this.root) {
     if (root === null) {
       console.log("findItem: notFound", value);
       return null;
@@ -116,9 +120,56 @@ class Tree {
       : this.findItem(value, root.right);
   }
 
-  levelOrder(callback) {
-    //This one is going to be complicated
+  levelOrder(callBack, root = this.root) {
     //build a version that iterates and one that recurses
+    let queue = [];
+    let result = [];
+
+    if (root === null) return null;
+
+    //find callBack node if provided
+    let foundItem = callBack ? this.findItem(callBack, root) : root;
+
+    if (foundItem === null) {
+      console.log("LevelOrderFindItem: not found", callBack);
+      return result;
+    }
+
+    queue.push(foundItem);
+
+    // //***^^^iteration version^^^***
+    // //begin level order traversal at callBack or root as provided
+    // while (queue.length > 0) {
+    //   let current = queue.shift();
+    //   result.push(current);
+    //   if (current.left) {
+    //     queue.push(current.left);
+    //   }
+    //   if (current.right) {
+    //     queue.push(current.right);
+    //   }
+    // }
+    // console.log(
+    //   "LevelOrderFinal:",
+    //   result.map((node) => node.data.toString()).join(", ")
+    // );
+    // return result;
+
+    //***recursive version***/
+
+    let current = queue.shift();
+    result.push(current);
+    if (current.left) {
+      queue.push(current.left);
+    }
+    if (current.right) {
+      queue.push(current.right);
+    }
+     console.log(
+      "LevelOrderFinal:",
+      result.map((node) => node.data.toString()).join(", ")
+    );
+    return this.levelOrder(current, root);
   }
 
   inOrder(callback) {}
@@ -180,3 +231,6 @@ prettyPrint(myTree.root);
 myTree.deleteItem(67, myTree.root); //calls node.right w/ child
 myTree.deleteItem(4, myTree.root); //calls node.left w/ child
 prettyPrint(myTree.root);
+// myTree.levelOrder(null, myTree.root);
+myTree.levelOrder(69, myTree.root);
+// myTree.levelOrder(6, myTree.root);
