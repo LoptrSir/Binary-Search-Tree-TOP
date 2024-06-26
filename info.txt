@@ -1,4 +1,5 @@
 Balanced Binary Search Tree TOP project
 
+6/26 levelOrder() recursion finished. streamlined initial callBack logic with a ternary operator that works in both versions.
 6/25 levelOrder iteration function works, starting on recursive version.  First loop works, second loop triggers cant find in findItem, how can I skip over that?
 6/24 nailed down deleteItem function

@@ -120,26 +120,23 @@ class Tree {
       : this.findItem(value, root.right);
   }
 
-  levelOrder(callBack, root = this.root) {
-    //build a version that iterates and one that recurses
+    levelOrder(callBack, root = this.root) {
+    //###2 versions: iteration and recursion###
     let queue = [];
     let result = [];
 
     if (root === null) return null;
+      let foundItem = callBack ? this.findItem(callBack, root) : root;
+      if (foundItem === null) {
+          console.log("LevelOrderFindItem: not found", callBack);
+          return result;
+      }
+      queue.push(foundItem);
 
-    //find callBack node if provided
-    let foundItem = callBack ? this.findItem(callBack, root) : root;
-
-    if (foundItem === null) {
-      console.log("LevelOrderFindItem: not found", callBack);
-      return result;
-    }
-
-    queue.push(foundItem);
-
-    // //***^^^iteration version^^^***
+    //  //***^^^iteration version^^^***
     // //begin level order traversal at callBack or root as provided
     // while (queue.length > 0) {
+    //   // current = queue.shift();
     //   let current = queue.shift();
     //   result.push(current);
     //   if (current.left) {
@@ -155,9 +152,11 @@ class Tree {
     // );
     // return result;
 
-    //***recursive version***/
-
+  //   //^^^***recursive version***^^^/
+    const traverse = () => {
+      if (queue.length === 0) return result;
     let current = queue.shift();
+    console.log('current1:', current);
     result.push(current);
     if (current.left) {
       queue.push(current.left);
@@ -165,29 +164,31 @@ class Tree {
     if (current.right) {
       queue.push(current.right);
     }
-     console.log(
-      "LevelOrderFinal:",
-      result.map((node) => node.data.toString()).join(", ")
+    console.log('Queue.length:', queue.length);
+    traverse();
+  }
+    traverse();
+    console.log(
+      `LevelOrderFinal:"Queue ${queue.map((node) => node.data.toString()).join(", ")} Result 
+      ${result.map((node) => node.data.toString()).join(", ")}`
     );
-    return this.levelOrder(current, root);
+   return result;
   }
 
-  inOrder(callback) {}
+  //inOrder(callback) {}
 
-  preOrder(callback) {}
+  //preOrder(callback) {}
 
-  postOrder(callback) {}
+  //postOrder(callback) {}
 
-  height(node) {}
+  //height(node) {}
 
-  isBalanced() {}
+  //isBalanced() {}
 
-  reBalance() {
-    let tempArray = [];
-  }
+  // reBalance() {
+  //   let tempArray = [];
+  // }
 }
-
-//insert prettyPrint function from lesson for console.log visualization
 
 //driver script to automate process see lesson for details
 
@@ -231,6 +232,6 @@ prettyPrint(myTree.root);
 myTree.deleteItem(67, myTree.root); //calls node.right w/ child
 myTree.deleteItem(4, myTree.root); //calls node.left w/ child
 prettyPrint(myTree.root);
-// myTree.levelOrder(null, myTree.root);
+myTree.levelOrder(null, myTree.root);
 myTree.levelOrder(69, myTree.root);
-// myTree.levelOrder(6, myTree.root);
+myTree.levelOrder(6, myTree.root);
