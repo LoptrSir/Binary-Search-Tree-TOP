@@ -1,5 +1,9 @@
 Balanced Binary Search Tree TOP project
 
+7/1 
+1113: pre and postOrder() sorted.
+1030 inOrder() is sorted.
+0930: InOrder() is running twice and if callBack has a variable it shows up but as first argument but then is ignored and whole list is traversed.
 6/26 levelOrder() recursion finished. streamlined initial callBack logic with a ternary operator that works in both versions.
 6/25 levelOrder iteration function works, starting on recursive version.  First loop works, second loop triggers cant find in findItem, how can I skip over that?
 6/24 nailed down deleteItem function

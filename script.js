@@ -13,7 +13,6 @@ class Node {
 class Tree {
   constructor(array) {
     this.filteredArray = this.sortArray(array);
-    // this.root = null;
     this.root = this.buildTree(
       this.filteredArray,
       0,
@@ -120,18 +119,18 @@ class Tree {
       : this.findItem(value, root.right);
   }
 
-    levelOrder(callBack, root = this.root) {
+  levelOrder(callBack, root = this.root) {
     //###2 versions: iteration and recursion###
     let queue = [];
     let result = [];
 
     if (root === null) return null;
-      let foundItem = callBack ? this.findItem(callBack, root) : root;
-      if (foundItem === null) {
-          console.log("LevelOrderFindItem: not found", callBack);
-          return result;
-      }
-      queue.push(foundItem);
+    let foundItem = callBack ? this.findItem(callBack, root) : root;
+    if (foundItem === null) {
+      console.log("LevelOrderFindItem: not found", callBack);
+      return result;
+    }
+    queue.push(foundItem);
 
     //  //***^^^iteration version^^^***
     // //begin level order traversal at callBack or root as provided
@@ -152,34 +151,108 @@ class Tree {
     // );
     // return result;
 
-  //   //^^^***recursive version***^^^/
+    //   //^^^***recursive version***^^^/
     const traverse = () => {
       if (queue.length === 0) return result;
-    let current = queue.shift();
-    console.log('current1:', current);
-    result.push(current);
-    if (current.left) {
-      queue.push(current.left);
-    }
-    if (current.right) {
-      queue.push(current.right);
-    }
-    console.log('Queue.length:', queue.length);
-    traverse();
-  }
+      let current = queue.shift();
+      console.log("LevelOrderTraversecurrent1:", current);
+      result.push(current);
+      if (current.left) {
+        queue.push(current.left);
+      }
+      if (current.right) {
+        queue.push(current.right);
+      }
+      console.log("LevelOrderQueue.length:", queue.length);
+      traverse();
+    };
     traverse();
     console.log(
-      `LevelOrderFinal:"Queue ${queue.map((node) => node.data.toString()).join(", ")} Result 
+      `LevelOrderFinal:"Queue ${queue
+        .map((node) => node.data.toString())
+        .join(", ")} Result 
       ${result.map((node) => node.data.toString()).join(", ")}`
     );
-   return result;
+    return result;
   }
 
-  //inOrder(callback) {}
+  inOrder(root = this.root, callBack) {
+    //traverse left, visit/print root, traverse right
+    let inOrderArray = [];
 
-  //preOrder(callback) {}
+    if (!root) return inOrderArray;
 
-  //postOrder(callback) {}
+    let foundItem = callBack ? this.findItem(callBack, root) : root;
+    if (!foundItem) {
+      console.log("InOrderItem: not found", callBack);
+      return inOrderArray; //is this the proper return if its empty? I think so.
+    }
+
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      inOrderArray.push(node);
+      traverse(node.right);
+    };
+    traverse(foundItem);
+    console.log(
+      `InOrder Result ${inOrderArray
+        .map((node) => node.data.toString())
+        .join(", ")}`
+    );
+    return inOrderArray; //makes inOrderArray accessible outside this function.
+  }
+
+  preOrder(root = this.root, callBack) {
+    //visit/print root, traverse left, traverse right
+    let preOrderArray = [];
+
+    if (!root) return preOrderArray;
+
+    let foundItem = callBack ? this.findItem(callBack, root) : root;
+    if (!foundItem) {
+      console.log("PreOrderItem: not found", callBack);
+      return preOrderArray; //is this the proper return if its empty? I think so.
+    }
+    const traverse = (node) => {
+      if (!node) return;
+      preOrderArray.push(node);
+      traverse(node.left);
+      traverse(node.right);
+    };
+    traverse(foundItem);
+    console.log(
+      `PreOrder Result ${preOrderArray
+        .map((node) => node.data.toString())
+        .join(", ")}`
+    );
+    return preOrderArray; //makes inOrderArray accessible outside this function.
+  }
+
+  postOrder(root = this.root, callBack) {
+    //traverse left, traverse right, visit/print root
+    let postOrderArray = [];
+    if (!root) return postOrderArray;
+
+    let foundItem = callBack ? this.findItem(callBack, root) : root;
+    if (!foundItem) {
+      console.log("PostOrderItem: not found", callBack);
+      return postOrderArray; //is this the proper return if its empty? I think so.
+    }
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      traverse(node.right);
+      postOrderArray.push(node);
+    };
+    traverse(foundItem);
+    console.log(
+      `PostOrder Result ${postOrderArray
+        .map((node) => node.data.toString())
+        .join(", ")}`
+    );
+    return postOrderArray; //makes inOrderArray accessible outside this function.
+  }
 
   //height(node) {}
 
@@ -235,3 +308,15 @@ prettyPrint(myTree.root);
 myTree.levelOrder(null, myTree.root);
 myTree.levelOrder(69, myTree.root);
 myTree.levelOrder(6, myTree.root);
+myTree.inOrder(myTree.root);
+myTree.inOrder(myTree.root, 69);
+myTree.inOrder(myTree.root, 4);
+prettyPrint(myTree.root);
+myTree.preOrder(myTree.root);
+myTree.preOrder(myTree.root, 69);
+myTree.preOrder(myTree.root, 4);
+prettyPrint(myTree.root);
+myTree.postOrder(myTree.root);
+myTree.postOrder(myTree.root, 69);
+myTree.postOrder(myTree.root, 4);
+prettyPrint(myTree.root);
