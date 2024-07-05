@@ -44,9 +44,20 @@ class Tree {
       console.log("InsertItem: inserted", value);
       return new Node(value);
     }
-    return value < root.data
-      ? (root.left = this.insertItem(root.left, value))
-      : this.insertItem(root.right, value);
+    // return value < root.data  //removes children that pre-exist
+    //   ? (root.left = this.insertItem(root.left, value))
+    //   : this.insertItem(root.right, value);
+
+    if (value < root.data) {
+      // Recursively insert into the left subtree
+      root.left = this.insertItem(root.left, value);
+    } else if (value > root.data) {
+      // Recursively insert into the right subtree
+      root.right = this.insertItem(root.right, value);
+    }
+
+    // Return the (possibly modified) root node
+    return root;
   }
 
   deleteItem(root = this.root, value) {
@@ -207,7 +218,7 @@ class Tree {
 
     if (!foundItem) {
       console.log("PostOrderItem: not found", callBack);
-      return null; 
+      return null;
     }
     const traverse = (node) => {
       if (!node) return;
@@ -253,7 +264,7 @@ class Tree {
     //returns number of nodes from root/callBack to furthest leaf.
     let foundItem = callBack ? this.findItem(root, callBack) : root;
     if (!foundItem) {
-      console.log("PostOrderItem: not found", callBack);
+      console.log("HeightRecursionItem: not found", callBack);
       return 0;
     }
 
@@ -261,6 +272,7 @@ class Tree {
       if (!node) return 0;
       const leftHeight = traverse(node.left);
       const rightHeight = traverse(node.right);
+
       return Math.max(leftHeight, rightHeight) + 1;
     };
     const height = traverse(foundItem);
@@ -268,13 +280,31 @@ class Tree {
     return height;
   }
 
-  //isBalanced() {}
+  // //^%^% based on bstArray ignores manually added nodes.
+  isBalanced(root = this.root) {
+    //--Checks to see if any root is more than one node longer
+    const checkBalance = (node) => {
+      if (node === null) return 0;
 
-  // reBalance() {
-  //   let tempArray = [];
-  // }
+      const leftHeight = checkBalance(node.left);
+      if (leftHeight === -1) return -1;
+
+      const rightHeight = checkBalance(node.right);
+      if (rightHeight === -1) return -1;
+
+      // if (Math.abs(leftHeight - rightHeight) > 1) {
+      //   return -1;
+      // } else {
+      //   return Math.max(leftHeight, rightHeight) + 1;
+      // }
+      if (Math.abs(leftHeight - rightHeight) > 1) return -1;
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+    let balanced = checkBalance(root) !== -1;
+    console.log(`IsBalanced: ${balanced}`);
+    return balanced;
+  }
 }
-
 //driver script to automate process see lesson for details
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -314,8 +344,8 @@ myTree.findItem(myTree.root, 23);
 myTree.findItem(myTree.root, 13);
 myTree.deleteItem(myTree.root, 13);
 myTree.deleteItem(myTree.root, 23);
-myTree.deleteItem(myTree.root, 67); 
-myTree.deleteItem(myTree.root, 4); 
+myTree.deleteItem(myTree.root, 67);
+myTree.deleteItem(myTree.root, 4);
 prettyPrint(myTree.root);
 myTree.levelOrder(myTree.root);
 myTree.levelOrder(myTree.root, 69);
@@ -335,6 +365,14 @@ myTree.postOrder(myTree.root, 4);
 prettyPrint(myTree.root);
 myTree.heightIteration(myTree.root);
 myTree.heightIteration(myTree.root, 1);
+myTree.heightIteration(myTree.root, 4);
 myTree.heightRecursion(myTree.root);
 myTree.heightRecursion(myTree.root, 1);
+myTree.heightRecursion(myTree.root, 4);
+myTree.isBalanced(myTree.root);
+myTree.insertItem(myTree.root, 6346); // causes unbalanced bst
+myTree.insertItem(myTree.root, 6347); // causes unbalanced bst
+myTree.heightRecursion(myTree.root);
+myTree.isBalanced(myTree.root);
+//console.log('myTree', myTree);
 prettyPrint(myTree.root);
