@@ -49,19 +49,12 @@ class Tree {
       console.log("InsertItem: inserted", value);
       return new Node(value);
     }
-    // return value < root.data  //removes children that pre-exist
-    //   ? (root.left = this.insertItem(root.left, value))
-    //   : this.insertItem(root.right, value);
-
+    // Recursively insert into the left/right subtree
     if (value < root.data) {
-      // Recursively insert into the left subtree
       root.left = this.insertItem(root.left, value);
     } else if (value > root.data) {
-      // Recursively insert into the right subtree
       root.right = this.insertItem(root.right, value);
     }
-
-    // Return the (possibly modified) root node
     return root;
   }
 
@@ -76,6 +69,7 @@ class Tree {
     } else if (value > root.data) {
       root.right = this.deleteItem(root.right, value);
     } else {
+       // address single child of value
       if (root.left === null) {
         console.log("DeleteItem: deleted");
         return root.right;
@@ -83,6 +77,7 @@ class Tree {
         console.log("DeleteItem: deleted");
         return root.left;
       }
+      //create successor if two children of value
       root.data = this.smallestNode(root.right).data;
       root.right = this.deleteItem(root.right, root.data);
     }
@@ -106,12 +101,8 @@ class Tree {
       console.log("findItem: found", value);
       return root;
     }
-    return value < root.data
-      ? this.findItem(root.left, value)
-      : this.findItem(root.right, value);
+    return value < root.data ? this.findItem(root.left, value) : this.findItem(root.right, value);
   }
-
-  foundItem(root, callBack) {}
 
   levelOrder(root = this.root, callBack) {
     //###2 versions: iteration and recursion###
@@ -148,7 +139,6 @@ class Tree {
     const traverse = () => {
       if (queue.length === 0) return result;
       let current = queue.shift();
-      //console.log("LevelOrderTraverseCurrent1:", current);
       result.push(current);
       if (current.left) {
         queue.push(current.left);
@@ -156,15 +146,10 @@ class Tree {
       if (current.right) {
         queue.push(current.right);
       }
-      //console.log("LevelOrderQueue.length:", queue.length);
       traverse();
     };
     traverse();
-    console.log(
-      `LevelOrderFinal:"Queue ${queue
-        .map((node) => node.data.toString())
-        .join(", ")} Result 
-      ${result.map((node) => node.data.toString()).join(", ")}`
+    console.log(`LevelOrderFinal:"Queue ${queue.map((node) => node.data.toString()).join(", ")} Result${result.map((node) => node.data.toString()).join(", ")}`
     );
     return result;
   }
@@ -186,10 +171,7 @@ class Tree {
     };
     traverse(foundItem);
     console.log(
-      `InOrder Result ${inOrderArray
-        .map((node) => node.data.toString())
-        .join(", ")}`
-    );
+      `InOrder Result ${inOrderArray.map((node) => node.data.toString()).join(", ")}`);
     return inOrderArray; //makes inOrderArray accessible outside this function.
   }
 
@@ -208,11 +190,7 @@ class Tree {
       traverse(node.right);
     };
     traverse(foundItem);
-    console.log(
-      `PreOrder Result ${preOrderArray
-        .map((node) => node.data.toString())
-        .join(", ")}`
-    );
+    console.log(`PreOrder Result ${preOrderArray.map((node) => node.data.toString()).join(", ")}`);
     return preOrderArray; //makes inOrderArray accessible outside this function.
   }
 
@@ -232,11 +210,7 @@ class Tree {
       postOrderArray.push(node);
     };
     traverse(foundItem);
-    console.log(
-      `PostOrder Result ${postOrderArray
-        .map((node) => node.data.toString())
-        .join(", ")}`
-    );
+    console.log(`PostOrder Result ${postOrderArray.map((node) => node.data.toString()).join(", ")}`);
     return postOrderArray; //makes inOrderArray accessible outside this function.
   }
 
@@ -284,6 +258,23 @@ class Tree {
     console.log("HeightRecursion is:", height);
     return height;
   }
+
+  depth(root = this.root, callBack, count = 0) {
+  //given distance from value to root
+  if (!root) return null;
+
+  if (root.data === callBack){
+    console.log('DepthBase:', count );
+    return count;
+    }
+
+    if (root.data > callBack) {
+      return this.depth(root.left, callBack, count + 1);
+
+    } else if (root.data < callBack) {
+    return this.depth(root.right, callBack, count + 1);
+    }
+  }  
 
   isBalanced(root = this.root) {
     //--Checks to see if any root is more than one node longer
@@ -402,3 +393,4 @@ myTree.isBalanced(myTree.root);
 // console.log("myTreeRoot", myTree.root);
 prettyPrint(myTree.root);
 myTree.reBalance(myTree.root);
+myTree.depth(myTree.root, 3);

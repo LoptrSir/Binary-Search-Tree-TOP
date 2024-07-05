@@ -1,6 +1,7 @@
 Balanced Binary Search Tree TOP project
 
-7/5 1223 isBalanced sorted.
+7/5 1428 depth() sorted.
+1223 isBalanced sorted.
 1027 isBalanced() sorted.  had an issue with returning true/false instead of -1/height.
 7/1 1309 heightIteration() and heightRecursion() sorted.
 1113: pre and postOrder() sorted.
