@@ -21,6 +21,11 @@ class Tree {
       this.filteredArray.length - 1
     );
   }
+  // class Tree {
+  //   constructor(array) {
+  //     this.filteredArray = this.sortArray(array);;
+  //     this.root = null;
+  //   }
 
   sortArray(array) {
     let sortedArray = [...new Set(array)].sort((a, b) => a - b);
@@ -151,7 +156,7 @@ class Tree {
       if (current.right) {
         queue.push(current.right);
       }
-      console.log("LevelOrderQueue.length:", queue.length);
+      //console.log("LevelOrderQueue.length:", queue.length);
       traverse();
     };
     traverse();
@@ -280,7 +285,6 @@ class Tree {
     return height;
   }
 
-  // //^%^% based on bstArray ignores manually added nodes.
   isBalanced(root = this.root) {
     //--Checks to see if any root is more than one node longer
     const checkBalance = (node) => {
@@ -303,6 +307,26 @@ class Tree {
     let balanced = checkBalance(root) !== -1;
     console.log(`IsBalanced: ${balanced}`);
     return balanced;
+  }
+
+  // sortArray(root) => {
+  //   let newArray = [];
+  //   //call inorder traverse
+  // }
+
+  reBalance(root = this.root) {
+    //--rebalanced BST if out of balance
+    let balanced = this.isBalanced(root);
+    if (balanced === true) {
+      console.log(`ReBalance: BST is balanced`);
+      return true;
+    } else {
+      console.log(`ReBalance: out of balance`);
+      const thisArray = this.levelOrder(root).map((node) => node.data);
+      const rebalancedTree = new Tree(thisArray);
+      prettyPrint(rebalancedTree.root);
+      return rebalancedTree;
+    }
   }
 }
 //driver script to automate process see lesson for details
@@ -374,5 +398,7 @@ myTree.insertItem(myTree.root, 6346); // causes unbalanced bst
 myTree.insertItem(myTree.root, 6347); // causes unbalanced bst
 myTree.heightRecursion(myTree.root);
 myTree.isBalanced(myTree.root);
-//console.log('myTree', myTree);
+// console.log("myTree", myTree);
+// console.log("myTreeRoot", myTree.root);
 prettyPrint(myTree.root);
+myTree.reBalance(myTree.root);
