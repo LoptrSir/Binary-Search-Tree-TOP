@@ -1,5 +1,7 @@
 // Balanced Binary Search Tree TOP Lesson
 
+//Move foundItem to its own function then call it within relevant functions.
+
 //BST.js
 
 class Node {
@@ -13,25 +15,19 @@ class Node {
 class Tree {
   constructor(array) {
     this.filteredArray = this.sortArray(array);
-    // this.root = null;
     this.root = this.buildTree(
       this.filteredArray,
       0,
       this.filteredArray.length - 1
     );
   }
+  // class Tree {
+  //   constructor(array) {
+  //     this.filteredArray = this.sortArray(array);;
+  //     this.root = null;
+  //   }
 
   sortArray(array) {
-    // let sortedArray = array.slice().sort((a, b) => a - b);
-    // let filteredArray = [];
-    // for (let i = 0; i < sortedArray.length; i++) {
-    //   filteredArray.push(sortedArray[i]);
-    //   if (sortedArray[i] === sortedArray[i + 1]) {
-    //     i++;
-    //   }
-    // }
-    // console.log("SortArray: filteredArray", filteredArray);
-    // return filteredArray; // updates constructor filteredArray data
     let sortedArray = [...new Set(array)].sort((a, b) => a - b);
     return sortedArray;
   }
@@ -45,40 +41,35 @@ class Tree {
 
     node.left = this.buildTree(array, start, mid - 1);
     node.right = this.buildTree(array, mid + 1, end);
-
     return node;
   }
 
-  // insertItem(value, root) {
-  insertItem(value, root = this.root) {
+  insertItem(root = this.root, value) {
     if (root === null) {
       console.log("InsertItem: inserted", value);
       return new Node(value);
     }
-    // if (value < root.data) {
-    //   root.left = this.insertItem(value, root.left);
-    // } else {
-    //   root.right = this.insertItem(value, root.right);
-    // }
-    // return root;
-    return value < root.data
-      ? (root.left = this.insertItem(value, root.left))
-      : this.insertItem(value, root.right);
+    // Recursively insert into the left/right subtree
+    if (value < root.data) {
+      root.left = this.insertItem(root.left, value);
+    } else if (value > root.data) {
+      root.right = this.insertItem(root.right, value);
+    }
+    return root;
   }
 
-  //deleteItem(value, root) {
-  deleteItem(value, root = this.root) {
+  deleteItem(root = this.root, value) {
     if (root === null) {
       console.log("DeleteItem: notFound", value);
       return null; //advises recursion this is the end of the line.
     }
 
     if (value < root.data) {
-      // if (value < root) {  // root is a node object, not a primitive value like data or key.
-      root.left = this.deleteItem(value, root.left);
+      root.left = this.deleteItem(root.left, value);
     } else if (value > root.data) {
-      root.right = this.deleteItem(value, root.right);
+      root.right = this.deleteItem(root.right, value);
     } else {
+       // address single child of value
       if (root.left === null) {
         console.log("DeleteItem: deleted");
         return root.right;
@@ -86,8 +77,9 @@ class Tree {
         console.log("DeleteItem: deleted");
         return root.left;
       }
+      //create successor if two children of value
       root.data = this.smallestNode(root.right).data;
-      root.right = this.deleteItem(root.data, root.right);
+      root.right = this.deleteItem(root.right, root.data);
     }
     return root;
   }
@@ -99,8 +91,7 @@ class Tree {
     return node;
   }
 
-  // findItem(value, root) {
-  findItem(value, root = this.root) {
+  findItem(root = this.root, value) {
     if (root === null) {
       console.log("findItem: notFound", value);
       return null;
@@ -110,28 +101,20 @@ class Tree {
       console.log("findItem: found", value);
       return root;
     }
-    // if (value < root.data) {
-    //   return this.findItem(value, root.left);
-    // } else {
-    //   return this.findItem(value, root.right);
-    // }
-    return value < root.data
-      ? this.findItem(value, root.left)
-      : this.findItem(value, root.right);
+    return value < root.data ? this.findItem(root.left, value) : this.findItem(root.right, value);
   }
 
-    levelOrder(callBack, root = this.root) {
+  levelOrder(root = this.root, callBack) {
     //###2 versions: iteration and recursion###
     let queue = [];
     let result = [];
 
-    if (root === null) return null;
-      let foundItem = callBack ? this.findItem(callBack, root) : root;
-      if (foundItem === null) {
-          console.log("LevelOrderFindItem: not found", callBack);
-          return result;
-      }
-      queue.push(foundItem);
+    let foundItem = callBack ? this.findItem(root, callBack) : root;
+    if (foundItem === null) {
+      console.log("LevelOrderFindItem: not found", callBack);
+      return null;
+    }
+    queue.push(foundItem);
 
     //  //***^^^iteration version^^^***
     // //begin level order traversal at callBack or root as provided
@@ -152,44 +135,191 @@ class Tree {
     // );
     // return result;
 
-  //   //^^^***recursive version***^^^/
+    //   //^^^***recursive version***^^^/
     const traverse = () => {
       if (queue.length === 0) return result;
-    let current = queue.shift();
-    console.log('current1:', current);
-    result.push(current);
-    if (current.left) {
-      queue.push(current.left);
-    }
-    if (current.right) {
-      queue.push(current.right);
-    }
-    console.log('Queue.length:', queue.length);
+      let current = queue.shift();
+      result.push(current);
+      if (current.left) {
+        queue.push(current.left);
+      }
+      if (current.right) {
+        queue.push(current.right);
+      }
+      traverse();
+    };
     traverse();
-  }
-    traverse();
-    console.log(
-      `LevelOrderFinal:"Queue ${queue.map((node) => node.data.toString()).join(", ")} Result 
-      ${result.map((node) => node.data.toString()).join(", ")}`
+    console.log(`LevelOrderFinal:"Queue ${queue.map((node) => node.data.toString()).join(", ")} Result${result.map((node) => node.data.toString()).join(", ")}`
     );
-   return result;
+    return result;
   }
 
-  //inOrder(callback) {}
+  inOrder(root = this.root, callBack) {
+    //traverse left, visit/print root, traverse right
+    let inOrderArray = [];
+    let foundItem = callBack ? this.findItem(root, callBack) : root;
+    if (!foundItem) {
+      console.log("InOrderItem: not found", callBack);
+      return null;
+    }
 
-  //preOrder(callback) {}
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      inOrderArray.push(node);
+      traverse(node.right);
+    };
+    traverse(foundItem);
+    console.log(
+      `InOrder Result ${inOrderArray.map((node) => node.data.toString()).join(", ")}`);
+    return inOrderArray; //makes inOrderArray accessible outside this function.
+  }
 
-  //postOrder(callback) {}
+  preOrder(root = this.root, callBack) {
+    //visit/print root, traverse left, traverse right
+    let preOrderArray = [];
+    let foundItem = callBack ? this.findItem(root, callBack) : root;
+    if (!foundItem) {
+      console.log("PreOrderItem: not found", callBack);
+      return null;
+    }
+    const traverse = (node) => {
+      if (!node) return;
+      preOrderArray.push(node);
+      traverse(node.left);
+      traverse(node.right);
+    };
+    traverse(foundItem);
+    console.log(`PreOrder Result ${preOrderArray.map((node) => node.data.toString()).join(", ")}`);
+    return preOrderArray; //makes inOrderArray accessible outside this function.
+  }
 
-  //height(node) {}
+  postOrder(root = this.root, callBack) {
+    //traverse left, traverse right, visit/print root
+    let postOrderArray = [];
+    let foundItem = callBack ? this.findItem(root, callBack) : root;
 
-  //isBalanced() {}
+    if (!foundItem) {
+      console.log("PostOrderItem: not found", callBack);
+      return null;
+    }
+    const traverse = (node) => {
+      if (!node) return;
+      traverse(node.left);
+      traverse(node.right);
+      postOrderArray.push(node);
+    };
+    traverse(foundItem);
+    console.log(`PostOrder Result ${postOrderArray.map((node) => node.data.toString()).join(", ")}`);
+    return postOrderArray; //makes inOrderArray accessible outside this function.
+  }
 
-  // reBalance() {
-  //   let tempArray = [];
+  heightIteration(root = this.root, callBack) {
+    //returns number of nodes from root/callBack to furthest leaf.
+    const foundItem = callBack ? this.findItem(root, callBack) : root;
+    if (!foundItem) {
+      console.log("heightIteration: item not found", callBack);
+      return 0;
+    }
+    let height = 0;
+    let queue = [foundItem];
+
+    while (queue.length > 0) {
+      let levelSize = queue.length;
+
+      for (let i = 0; i < levelSize; i++) {
+        let node = queue.shift();
+        if (node.left) queue.push(node.left);
+
+        if (node.right) queue.push(node.right);
+      }
+      height++;
+    }
+    console.log(`HeightIteration is: ${height}`);
+    return height;
+  }
+
+  heightRecursion(root = this.root, callBack) {
+    //returns number of nodes from root/callBack to furthest leaf.
+    let foundItem = callBack ? this.findItem(root, callBack) : root;
+    if (!foundItem) {
+      console.log("HeightRecursionItem: not found", callBack);
+      return 0;
+    }
+
+    const traverse = (node) => {
+      if (!node) return 0;
+      const leftHeight = traverse(node.left);
+      const rightHeight = traverse(node.right);
+
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+    const height = traverse(foundItem);
+    console.log("HeightRecursion is:", height);
+    return height;
+  }
+
+  depth(root = this.root, callBack, count = 0) {
+  //given distance from value to root
+  if (!root) return null;
+
+  if (root.data === callBack){
+    console.log('DepthBase:', count );
+    return count;
+    }
+
+    if (root.data > callBack) {
+      return this.depth(root.left, callBack, count + 1);
+
+    } else if (root.data < callBack) {
+    return this.depth(root.right, callBack, count + 1);
+    }
+  }  
+
+  isBalanced(root = this.root) {
+    //--Checks to see if any root is more than one node longer
+    const checkBalance = (node) => {
+      if (node === null) return 0;
+
+      const leftHeight = checkBalance(node.left);
+      if (leftHeight === -1) return -1;
+
+      const rightHeight = checkBalance(node.right);
+      if (rightHeight === -1) return -1;
+
+      // if (Math.abs(leftHeight - rightHeight) > 1) {
+      //   return -1;
+      // } else {
+      //   return Math.max(leftHeight, rightHeight) + 1;
+      // }
+      if (Math.abs(leftHeight - rightHeight) > 1) return -1;
+      return Math.max(leftHeight, rightHeight) + 1;
+    };
+    let balanced = checkBalance(root) !== -1;
+    console.log(`IsBalanced: ${balanced}`);
+    return balanced;
+  }
+
+  // sortArray(root) => {
+  //   let newArray = [];
+  //   //call inorder traverse
   // }
-}
 
+  reBalance(root = this.root) {
+    //--rebalanced BST if out of balance
+    let balanced = this.isBalanced(root);
+    if (balanced === true) {
+      console.log(`ReBalance: BST is balanced`);
+      return true;
+    } else {
+      console.log(`ReBalance: out of balance`);
+      const thisArray = this.levelOrder(root).map((node) => node.data);
+      const rebalancedTree = new Tree(thisArray);
+      prettyPrint(rebalancedTree.root);
+      return rebalancedTree;
+    }
+  }
+}
 //driver script to automate process see lesson for details
 
 const prettyPrint = (node, prefix = "", isLeft = true) => {
@@ -221,17 +351,46 @@ myFooter();
 
 let bstSample = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 let myTree = new Tree(bstSample);
+
 prettyPrint(myTree.root);
-myTree.insertItem(69, myTree.root);
+myTree.insertItem(myTree.root, 69);
 prettyPrint(myTree.root);
-myTree.findItem(23, myTree.root);
-myTree.findItem(13, myTree.root);
-myTree.deleteItem(13, myTree.root);
-myTree.deleteItem(23, myTree.root);
+myTree.findItem(myTree.root, 23);
+myTree.findItem(myTree.root, 13);
+myTree.deleteItem(myTree.root, 13);
+myTree.deleteItem(myTree.root, 23);
+myTree.deleteItem(myTree.root, 67);
+myTree.deleteItem(myTree.root, 4);
 prettyPrint(myTree.root);
-myTree.deleteItem(67, myTree.root); //calls node.right w/ child
-myTree.deleteItem(4, myTree.root); //calls node.left w/ child
+myTree.levelOrder(myTree.root);
+myTree.levelOrder(myTree.root, 69);
+myTree.levelOrder(myTree.root, 6);
 prettyPrint(myTree.root);
-myTree.levelOrder(null, myTree.root);
-myTree.levelOrder(69, myTree.root);
-myTree.levelOrder(6, myTree.root);
+myTree.inOrder(myTree.root);
+myTree.inOrder(myTree.root, 69);
+myTree.inOrder(myTree.root, 4);
+prettyPrint(myTree.root);
+myTree.preOrder(myTree.root);
+myTree.preOrder(myTree.root, 69);
+myTree.preOrder(myTree.root, 4);
+prettyPrint(myTree.root);
+myTree.postOrder(myTree.root);
+myTree.postOrder(myTree.root, 69);
+myTree.postOrder(myTree.root, 4);
+prettyPrint(myTree.root);
+myTree.heightIteration(myTree.root);
+myTree.heightIteration(myTree.root, 1);
+myTree.heightIteration(myTree.root, 4);
+myTree.heightRecursion(myTree.root);
+myTree.heightRecursion(myTree.root, 1);
+myTree.heightRecursion(myTree.root, 4);
+myTree.isBalanced(myTree.root);
+myTree.insertItem(myTree.root, 6346); // causes unbalanced bst
+myTree.insertItem(myTree.root, 6347); // causes unbalanced bst
+myTree.heightRecursion(myTree.root);
+myTree.isBalanced(myTree.root);
+// console.log("myTree", myTree);
+// console.log("myTreeRoot", myTree.root);
+prettyPrint(myTree.root);
+myTree.reBalance(myTree.root);
+myTree.depth(myTree.root, 3);
